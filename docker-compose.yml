@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app  
+    networks:
+      - backend-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_ENV=development 
+      - FLASK_DEBUG=1 
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb 
+    volumes:
+      - ./backend:/app  
+    depends_on:
+      - db  
+    networks:
+      - backend-network
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user  
+      - POSTGRES_PASSWORD=password  
+      - POSTGRES_DB=audiovault  
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
