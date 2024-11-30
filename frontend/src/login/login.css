@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-color: #e0f7fa;
 }
   
 .login-box {
@@ -11,8 +12,6 @@
     border: 2px solid #889df0;
     border-radius: 8px;
     padding: 40px;
-    width: 450px;
-    max-width: 100%;
 }
   
 .login-title {

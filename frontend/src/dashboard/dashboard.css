@@ -1,0 +1,18 @@
+.tabs-bar .mantine-Tabs-tab {
+    color: #333; /* Darker text color */
+    font-weight: bold;
+    margin-right: 10px; /* Spacing between tabs */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.tabs-bar .mantine-Tabs-tab:hover {
+    background-color: #e0f0ff; /* Light blue background on hover */
+    color: #007BFF; /* Blue text color on hover */
+    border-radius: 5px; /* Optional: Match active tab corners */
+}
+
+.tabs-bar .mantine-Tabs-tab[data-active] {
+    background-color: #007BFF; /* Active tab background (blue) */
+    color: white; /* Active tab text color */
+    border-radius: 5px; /* Optional: Round corners of active tab */
+}

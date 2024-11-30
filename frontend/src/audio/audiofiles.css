@@ -1,0 +1,18 @@
+.audiofiles {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px; /* Add padding around the entire manage component */
+    width: 800px;
+}
+
+.audiofiles .mantine-Card-root {
+    flex: 1;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.manage .mantine-Card-root > .mantine-TextInput-root {
+    margin-bottom: 20px;
+}
+  

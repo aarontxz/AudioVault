@@ -27,6 +27,7 @@ services:
       - FLASK_ENV=development 
       - FLASK_DEBUG=1 
       - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb 
+      - FLASK_SECRET_KEY=AudioVaultKey
     volumes:
       - ./backend:/app  
     depends_on:
