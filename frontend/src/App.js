@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core'; // Import MantineProvider
-import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import Login from './login/login';
 import Dashboard from './dashboard/dashboard';
-import AudioFiles from './audio/audiofiles';
+import UserDashboard from './dashboard/userdashboard';
 import './App.css';
 import '@mantine/notifications/styles.css';
 import { jwtDecode } from "jwt-decode";
@@ -61,7 +60,7 @@ const PrivateAdminRoute = ({ element }) => {
 
     // Check if the user role is admin
     if (role !== 'admin') {
-      return <Navigate to="/audiofiles" />;
+      return <Navigate to="/user" />;
     }
 
   } catch (error) {
@@ -75,15 +74,6 @@ const PrivateAdminRoute = ({ element }) => {
 
 
 function App() {
-  // State to store the response from the backend
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/home`)
-      .then(response => response.json())
-      .then(data => setMessage(data.message)) // Set the message state with the response
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
 
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
@@ -91,8 +81,8 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<PrivateAdminRoute element={<Dashboard />} />} />
-            <Route path="/audiofiles" element={<PrivateRoute element={<AudioFiles />} />} />
+            <Route path="/admin" element={<PrivateAdminRoute element={<Dashboard />} />} />
+            <Route path="/user" element={<PrivateRoute element={<UserDashboard />} />} />
           </Routes>
         </div>
       </Router>

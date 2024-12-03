@@ -15,6 +15,8 @@ services:
       - ./frontend:/app  
     networks:
       - backend-network
+    env_file:
+      - .env
 
   backend:
     build:
@@ -34,6 +36,8 @@ services:
       - db  
     networks:
       - backend-network
+    env_file:
+      - .env
 
   db:
     image: postgres:13

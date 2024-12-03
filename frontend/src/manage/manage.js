@@ -3,7 +3,7 @@ import { Button, Table, Group, Modal, TextInput, Text, Container, ActionIcon, Pa
 import { IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
 import './manage.css';
 
-function Manage() {
+function Manage({selectedTab}) {
   const [users, setUsers] = useState([]); // State to store users
   const [filteredUsers, setFilteredUsers] = useState([]); // State to store filtered users
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // To toggle the add user modal
@@ -20,9 +20,35 @@ function Manage() {
   const [addmessageType, setAddMessageType] = useState('');
   const [searchTerm, setSearchTerm] = useState(''); // For searching by username
 
+  const resetState = () => {
+    setUsers([]);
+    setFilteredUsers([]);
+    setIsAddModalOpen(false);
+    setIsEditModalOpen(false);
+    setDeleteConfirmation(false);
+    setSelectedUser(null);
+    setUserToDelete(null);
+    setNewUser({ username: '', role: '', password: '' });
+    setMessage('');
+    setMessageType('');
+    setEditMessage('');
+    setEditMessageType('');
+    setAddMessage('');
+    setAddMessageType('');
+    setSearchTerm('');
+  };
+  
   useEffect(() => {
     fetchUsers();
   }, []);
+  
+  // Example use of resetState when needed
+  useEffect(() => {
+    if (selectedTab === 'manage users') {
+      fetchUsers();
+      resetState(); // Reset all state variables when the tab is selected
+    }
+  }, [selectedTab]);
 
   useEffect(() => {
     // Filter users based on search term
@@ -59,10 +85,18 @@ function Manage() {
   };
 
   const handleAddUser = async () => {
+    const token = localStorage.getItem('access_token'); // Or wherever your token is stored
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(newUser),
       });
 
@@ -85,20 +119,29 @@ function Manage() {
   };
 
   const handleEditUser = async () => {
+    const token = localStorage.getItem('access_token'); // Or wherever your token is stored
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/users/${selectedUser.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json' ,
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(selectedUser),
       });
 
       if (response.ok) {
         setMessage('User updated successfully!');
         setMessageType('success');
-        fetchUsers(); // Refresh the user list
-        setIsEditModalOpen(false); // Close the edit modal
+        fetchUsers(); 
+        setIsEditModalOpen(false);
       } else {
-        setEditMessage('Failed to update user.');
+        const data = await response.json();
+        setEditMessage(data.error);
         setEditMessageType('error');
       }
     } catch (error) {
@@ -108,19 +151,27 @@ function Manage() {
   };
 
   const handleDeleteUser = async () => {
+    const token = localStorage.getItem('access_token'); // Or wherever your token is stored
+    if (!token) {
+      console.error('No token found');
+      return;
+    }
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/users/${userToDelete.id}`,
-        { method: 'DELETE' }
+        { method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}`},
+        }
       );
 
       if (response.ok) {
         setMessage('User deleted successfully!');
         setMessageType('success');
         fetchUsers();
-        setDeleteConfirmation(false); // Close confirmation modal
+        setDeleteConfirmation(false);
       } else {
-        setMessage('Failed to delete user.');
+        const data = await response.json();
+        setMessage(data.error);
         setMessageType('error');
       }
     } catch (error) {
@@ -130,33 +181,42 @@ function Manage() {
   };
 
   const rows = filteredUsers.map((user) => (
-    <tr key={user.id}>
-      <td>{user.username}</td>
-      <td>{user.role}</td>
-      <td>
-        <ActionIcon
-          color="blue"
-          onClick={() => {
-            setSelectedUser(user);
-            setIsEditModalOpen(true);
-          }}
-        >
-          <IconEdit />
-        </ActionIcon>
-      </td>
-      <td>
-        <ActionIcon
-          color="red"
-          onClick={() => {
-            setUserToDelete(user);
-            setDeleteConfirmation(true);
-          }}
-        >
-          <IconTrash />
-        </ActionIcon>
-      </td>
-    </tr>
+    <Card shadow="sm" radius="md" className = "card" key={user.id}>
+      <Table style={{ tableLayout: 'fixed', width: '100%' }}>
+        <tbody>
+          <tr>
+            <td style={{ width: '60%' }}>{user.username}</td>
+            <td style={{ width: '24%' }}>{user.role}</td>
+            <td style={{ width: '8%' }}>
+              <ActionIcon
+                className="actionicon"
+                color="blue"
+                onClick={() => {
+                  setSelectedUser(user);
+                  setIsEditModalOpen(true);
+                }}
+              >
+                <IconEdit />
+              </ActionIcon>
+            </td>
+            <td style={{ width: '8%' }}>
+              <ActionIcon
+                className="actionicon"
+                color="grey"
+                onClick={() => {
+                  setUserToDelete(user);
+                  setDeleteConfirmation(true);
+                }}
+              >
+                <IconTrash />
+              </ActionIcon>
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+    </Card>
   ));
+  
 
   return (
     <Container className="manage">
@@ -183,26 +243,31 @@ function Manage() {
           style={{ marginBottom: '20px' }}
         />
 
-        <Table highlightOnHover className="headers" style={{ tableLayout: 'fixed' }}>
+        <Table className="headers" style={{ tableLayout: 'fixed' }}>
           <thead>
             <tr>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th style={{ width: '60%' }}>Username</th>
+              <th style={{ width: '25%' }}>Role</th> 
+              <th style={{ width: '3%' }}>Edit</th> 
+              <th style={{ width: '17%' }}>Delete</th> 
             </tr>
           </thead>
         </Table>
 
         <ScrollArea className="scrollarea">
-          <Table highlightOnHover="true" style={{ tableLayout: 'fixed' }}>
-            <tbody>{rows}</tbody>
+          <Table style={{ tableLayout: 'fixed' }}>
+            <tbody>{filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center', padding: '10px' }}>
+                  No users here, remove keywords from the search bar or create more users. Try logging out and logging back in if you are suppose to see users.
+                </td>
+              </tr>
+            ) : (
+              rows
+            )}</tbody>
           </Table>
         </ScrollArea>
       </Card>
-
-      {/* Modals for add, edit, and delete remain the same */}
-      {/* Delete Confirmation Modal */}
       <Modal
         opened={deleteConfirmation}
         onClose={() => setDeleteConfirmation(false)}
@@ -259,7 +324,7 @@ function Manage() {
         title="Edit User"
       >
         {editmessage && (
-          <Text c={editmessageType === 'success' ? 'green' : 'red'}>{message}</Text>
+          <Text c={editmessageType === 'success' ? 'green' : 'red'}>{editmessage}</Text>
         )}
         <TextInput
           label="Username"

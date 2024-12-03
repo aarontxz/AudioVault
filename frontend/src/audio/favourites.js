@@ -1,53 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Group, Button, Table, Text, ActionIcon, FileInput, TextInput, ScrollArea } from '@mantine/core';
-import { IconTrash, IconMusic, IconHeart, IconHeartFilled } from '@tabler/icons-react';
+import { Container, Card, Group, Table, Text, ActionIcon, TextInput, ScrollArea } from '@mantine/core';
+import { IconTrash, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import "./audiofiles.css";
 
-function AudioFiles({selectedTab}) {
+function FavouriteAudioFiles({ selectedTab }) {
   const [audioFiles, setAudioFiles] = useState([]); // List of uploaded audio files
   const [filteredAudioFiles, setFilteredAudioFiles] = useState([]); // Filtered audio files based on search
-  const [selectedFile, setSelectedFile] = useState(null); // Currently selected file for upload
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [searchQuery, setSearchQuery] = useState(''); // Search query for filtering files
 
-  // Handle file upload
-  const handleFileUpload = async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      console.error('No token found');
-      return;
-    }
-
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-
-      try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/audiofiles`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          body: formData,
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          setMessage('File uploaded successfully!');
-          setMessageType('success');
-          fetchAudioFiles();
-          setSelectedFile(null);
-        } else {
-          setMessage(data.error);
-          setMessageType('error');
-        }
-      } catch (error) {
-        setMessage('An error occurred while uploading the file.');
-        setMessageType('error');
-      }
-    }
-  };
 
   // Fetch audio files from the backend
   const fetchAudioFiles = async () => {
@@ -58,7 +20,7 @@ function AudioFiles({selectedTab}) {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/audiofiles`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/audiofiles/favourites`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -209,40 +171,25 @@ function AudioFiles({selectedTab}) {
   ));
 
   useEffect(() => {
-    if (selectedTab === 'audiofiles') {
+    if (selectedTab === 'favourites') {
       fetchAudioFiles();
       setMessage('');
       setMessageType('');
     }
   }, [selectedTab]); // Fetch audio files when the tab changes
 
+
   return (
     <Container className="audiofiles">
       <Card shadow="sm" padding="lg" radius="md" style={{ marginBottom: '20px' }}>
         <Group position="apart" mb="xl">
           <Text align="left" size="xl" fw="700">
-            Audio File Manager
+            Favourite Audio Files
           </Text>
           {message && (
             <Text c={messageType === 'error' ? 'red' : 'green'}>{message}</Text>
           )}
         </Group>
-
-        {/* File Upload */}
-        <Group mb="md" style={{ width: '100%' }} position="apart">
-          <FileInput
-            rightSection={<IconMusic />}
-            placeholder="Click here to select an audio file to upload"
-            accept="audio/*"
-            value={selectedFile}
-            onChange={(file) => setSelectedFile(file)}
-            style={{ width: '600px' }}
-          />
-          <Button onClick={handleFileUpload} disabled={!selectedFile}>
-            Upload
-          </Button>
-        </Group>
-
         {/* Search Bar */}
         <TextInput
           placeholder="Type here to filter audio files below by keyword"
@@ -251,7 +198,6 @@ function AudioFiles({selectedTab}) {
           mb="md"
         />
 
-        {/* Uploaded Files Table */}
         <Table className="headers" style={{ tableLayout: 'fixed' }}>
           <thead>
             <tr>
@@ -268,7 +214,7 @@ function AudioFiles({selectedTab}) {
             <tbody>{filteredAudioFiles.length === 0 ? (
               <tr>
                 <td colSpan={4} style={{ textAlign: 'center', padding: '10px' }}>
-                  No audio files here, start uploading or remove keywords from the search bar
+                  No favourite audio files here, favourite more audio files or remove keywords from the search bar
                 </td>
               </tr>
             ) : (
@@ -281,4 +227,4 @@ function AudioFiles({selectedTab}) {
   );
 }
 
-export default AudioFiles;
+export default FavouriteAudioFiles;

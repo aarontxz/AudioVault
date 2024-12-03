@@ -1,0 +1,18 @@
+/* Styles for AccountDrawer */
+.account-drawer-button {
+    margin-bottom: 15px;
+    width: 100%;
+}
+  
+.account-drawer-button + .account-drawer-button {
+    margin-top: 10px;
+}
+  
+.modal-buttons {
+    margin-top: 20px;
+}
+  
+.modal-buttons button {
+    margin: 0 10px;
+}
+  

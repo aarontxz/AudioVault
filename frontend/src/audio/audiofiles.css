@@ -3,7 +3,7 @@
     flex-direction: column;
     min-height: 100vh;
     padding: 20px; /* Add padding around the entire manage component */
-    width: 800px;
+    width: 1200px;
 }
 
 .audiofiles .mantine-Card-root {
@@ -15,4 +15,29 @@
 .manage .mantine-Card-root > .mantine-TextInput-root {
     margin-bottom: 20px;
 }
-  
+
+.scrollarea {
+    background-color: rgb(255, 243, 230);
+    height: 500px;
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid lightgray;
+}
+
+.audio-player {
+    width: 450px;
+    max-width: 100%;
+    border: 1px solid  lightgray; 
+    border-radius: 30px; 
+}
+
+.actionicon {
+    border: 1px solid lightgray
+}
+
+.card {
+    margin: 5px;
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid lightgray
+}

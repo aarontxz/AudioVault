@@ -1,36 +1,95 @@
-import React from 'react';
-import { Tabs, rem } from '@mantine/core';
-import { IconMusic, IconUsers } from '@tabler/icons-react'; // Import relevant icons
+import React, { useState, useEffect } from 'react';
+import { Tabs, rem, Button, Box } from '@mantine/core';
+import { IconMusic, IconUsers, IconUser, IconHeart } from '@tabler/icons-react'; // Import heart icon
 import Manage from '../manage/manage'; // Import your Manage component
-import AudioFiles from '../audio/audiofiles'; 
+import AudioFiles from '../audio/audiofiles';
+import AccountDrawer from '../drawer/accountdrawer'; // Import AccountDrawer
+import FavouritesAudioFiles from '../audio/favourites'; // Import the Favourites component (assumed to exist)
 import './dashboard.css'; // Import the CSS file
 
 const Dashboard = () => {
+  // Initialize selectedTab from localStorage or default to 'audiofiles'
+  const currentTab = localStorage.getItem('selectedTab') || 'audiofiles';
+  const [selectedTab, setSelectedTab] = useState(currentTab); // State for selected tab
+  const [drawerOpened, setDrawerOpened] = useState(false); // State for Drawer
+
   const iconStyle = { width: rem(16), height: rem(16) }; // Styling for icons
+
+  // Persist selectedTab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('selectedTab', selectedTab);
+  }, [selectedTab]);
+
+  // Handle tab click to update selectedTab
+  const handleTabClick = (tab) => {
+    setSelectedTab(tab); // Update the state when tab is clicked
+  };
 
   return (
     <div className="dashboard-container">
-      <Tabs defaultValue="manage" className="tabs-bar">
+      <Tabs
+        className="tabs-bar"
+        value={selectedTab} // Set the current tab value
+        onTabChange={(tab) => setSelectedTab(tab)} // Update selectedTab when tab changes
+      >
         <Tabs.List className="tabs-list">
-          {/* Tab for Manage */}
-          <Tabs.Tab value="manage" leftSection={<IconUsers style={iconStyle} />}>
-            Manage
+          {/* Leftmost Non-Clickable Tab for App Name */}
+          <Box className="app-name-tab">
+            AUDIOVAULT🎵🗄️
+          </Box>
+          {/* Tab for Manage Users */}
+          <Tabs.Tab
+            value="manage users"
+            leftSection={<IconUsers style={iconStyle} />}
+            onClick={() => handleTabClick('manage users')} // Trigger handleTabClick
+          >
+            Manage Users
           </Tabs.Tab>
-          {/* Tab for Login */}
-          <Tabs.Tab value="audiofiles" leftSection={<IconMusic style={iconStyle} />}>
+          {/* Tab for Audio Files */}
+          <Tabs.Tab
+            value="audiofiles"
+            leftSection={<IconMusic style={iconStyle} />}
+            onClick={() => handleTabClick('audiofiles')} // Trigger handleTabClick
+          >
             Audio Files
           </Tabs.Tab>
+          {/* Tab for Favourites */}
+          <Tabs.Tab
+            value="favourites"
+            leftSection={<IconHeart style={iconStyle} />}
+            onClick={() => handleTabClick('favourites')} // Trigger handleTabClick
+          >
+            Favourites
+          </Tabs.Tab>
+          {/* Drawer Trigger for My Account */}
+          <div className="my-account-button">
+            <Button 
+              variant="subtle"
+              className="my-account-button"
+              onClick={() => setDrawerOpened(true)} 
+              style={{ padding: '10px' }}
+            >
+              <IconUser style={iconStyle} /> My Account
+            </Button>
+          </div>
         </Tabs.List>
 
         {/* Panels render based on the selected tab */}
-        <Tabs.Panel value="manage" className="tabs-panel">
-          <Manage />
-        </Tabs.Panel>
+        <div className="tabs-panels">
+          <Tabs.Panel value="manage users" className="tabs-panel">
+            <Manage selectedTab={selectedTab}/>
+          </Tabs.Panel>
 
-        <Tabs.Panel value="audiofiles" className="tabs-panel">
-          <AudioFiles />
-        </Tabs.Panel>
+          <Tabs.Panel value="audiofiles" className="tabs-panel">
+            <AudioFiles selectedTab={selectedTab} />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="favourites" className="tabs-panel">
+            <FavouritesAudioFiles selectedTab={selectedTab} />
+          </Tabs.Panel>
+        </div>
       </Tabs>
+      <AccountDrawer opened={drawerOpened} onClose={() => setDrawerOpened(false)} />
     </div>
   );
 };

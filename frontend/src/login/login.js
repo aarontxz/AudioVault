@@ -54,13 +54,14 @@ function Login() {
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('user_id', user_id)
       localStorage.setItem('user_role', user_role)
+      localStorage.setItem('username', username)
 
       // Optionally check if the token is legitimate (e.g., decode it, or verify with the server)
       if (user_role === 'admin') {
         console.log('Login successful:', data);
-        navigate('/dashboard');
+        navigate('/admin');
       } else {
-        navigate('/audiofiles');
+        navigate('/user');
       }
     } catch (error) {
       console.error('Error during login:', error);

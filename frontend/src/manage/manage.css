@@ -20,8 +20,20 @@
 }
   
 .scrollarea {
-    background-color: rgb(212, 253, 239);
+    background-color: rgb(255, 243, 230);
     height: 500px;
     padding: 10px;
     border-radius: 15px;
+    border: 1px solid lightgray;
+}
+
+.actionicon {
+    border: 1px solid lightgray
+}
+
+.card {
+    margin: 5px;
+    padding: 20px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid lightgray
 }
