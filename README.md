@@ -39,5 +39,5 @@ cd AudioVault
 
 ### 2. build and run the docker image
 ```bash
-docker compose up
+docker-compose up --build
 ```
