@@ -1,0 +1,453 @@
+openapi: 3.0.0
+info:
+  title: AudioVault API
+  version: 1.0.0
+  description: An API for managing users and audio files in AudioVault.
+servers:
+  - url: 'http://localhost:5000'
+    description: 'Local server'
+
+paths:
+
+  /login:
+    post:
+      summary: Authenticate a user and issue JWT token
+      description: Authenticates the user with the provided credentials and returns an access token and a refresh token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user1"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: JWT tokens issued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: "access_token_value"
+                  refresh_token:
+                    type: string
+                    example: "refresh_token_value"
+                  user_id:
+                    type: string
+                    example: "user-id-123"
+                  user_role:
+                    type: string
+                    example: "member"
+        '401':
+          description: Invalid username.
+        '402':
+          description: Invalid password.
+
+  /refresh:
+    post:
+      summary: Refresh access token using refresh token
+      description: Issues a new access token using the provided refresh token.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: New access token issued successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: "new_access_token"
+        '401':
+          description: Invalid refresh token.
+
+  /users:
+    post:
+      summary: Create a new user
+      description: Creates a new user with the provided details.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "newuser"
+                password:
+                  type: string
+                  example: "password123"
+                role:
+                  type: string
+                  example: "member"
+      responses:
+        '201':
+          description: User created successfully.
+        '400':
+          description: Username, password, and role are required.
+
+    get:
+      summary: Get all users
+      description: Retrieves a list of all users.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of users.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "user-id-123"
+                        username:
+                          type: string
+                          example: "username"
+                        role:
+                          type: string
+                          example: "member"
+                        files:
+                          type: object
+                          additionalProperties: true
+        '401':
+          description: Unauthorized access.
+
+  /users/{id}:
+    delete:
+      summary: Delete a user by ID
+      description: Deletes the user with the specified ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the user to delete.
+          schema:
+            type: string
+            example: "user-id-123"
+      responses:
+        '200':
+          description: User deleted successfully.
+        '404':
+          description: User not found.
+
+    put:
+      summary: Update user details
+      description: Updates the details of an existing user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the user to update.
+          schema:
+            type: string
+            example: "user-id-123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "updateduser"
+                role:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "newpassword123"
+      responses:
+        '200':
+          description: User updated successfully.
+        '400':
+          description: Username already taken by another user.
+        '404':
+          description: User not found.
+
+  /users/username:
+    put:
+      summary: Update logged-in user's username
+      description: Updates the username of the currently authenticated user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "newusername"
+      responses:
+        '200':
+          description: Username updated successfully.
+        '400':
+          description: Username already taken.
+        '404':
+          description: User not found.
+        '500':
+          description: Username input is required.
+
+  /users/password:
+    put:
+      summary: Update logged-in user's password
+      description: Updates the password of the currently authenticated user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: "newpassword123"
+      responses:
+        '200':
+          description: Password updated successfully.
+        '400':
+          description: Password input is required.
+        '404':
+          description: User not found.
+
+  /audiofiles:
+    post:
+      summary: Upload an audio file
+      description: Uploads an audio file and stores it in the database and S3.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Audio file uploaded successfully.
+        '400':
+          description: No file provided or selected.
+        '500':
+          description: Error uploading the file.
+
+    get:
+      summary: Get audio files
+      description: Retrieves a list of audio files uploaded by the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of audio files.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  audiofiles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "file-id-123"
+                        file_name:
+                          type: string
+                          example: "file1.mp3"
+                        liked:
+                          type: boolean
+                          example: true
+                        file_content:
+                          type: string
+                          example: "encoded-content-here"
+        '401':
+          description: Unauthorized access.
+  /audiofiles/favourites:
+    get:
+      summary: Get a list of the user's favourite audio files
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of favourite audio files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  audiofiles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        file_name:
+                          type: string
+                        liked:
+                          type: boolean
+  /audiofiles/{id}:
+    delete:
+      summary: Delete an audio file by ID
+      description: Deletes the audio file with the specified ID, if it belongs to the authenticated user. The file will be removed from both the database and S3.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the audio file to delete.
+          schema:
+            type: string
+            example: "file-id-123"
+      responses:
+        '200':
+          description: Audio file deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Audio file file1.mp3 deleted successfully!"
+        '404':
+          description: Audio file not found or does not belong to the current user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Audio file not found or you do not have permission to delete it."
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error deleting the file."
+  /audiofiles/{id}/like:
+    patch:
+      summary: Update the liked status of an audio file
+      description: Updates the liked status of the audio file with the specified ID for the authenticated user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the audio file to like/unlike.
+          schema:
+            type: string
+            example: "file-id-123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                liked:
+                  type: boolean
+                  example: true
+                  description: The new "liked" status of the audio file.
+      responses:
+        '200':
+          description: Successfully updated the liked status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "file-id-123"
+                  liked:
+                    type: boolean
+                    example: true
+        '400':
+          description: "Liked status must be provided."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Liked status must be provided."
+        '403':
+          description: User does not have permission to like this file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You do not have permission to like this file."
+        '404':
+          description: Audio file not found or does not belong to the current user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Audio file not found."
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Error updating the liked status."
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
