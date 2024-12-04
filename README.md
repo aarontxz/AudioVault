@@ -13,6 +13,7 @@ https://youtu.be/4bY9Knj95gw
 - **Audio File Management**: Upload audio files, like/dislike files, and delete files from both the database and S3 storage.
 - **Role-Based Access Control**: Different user roles with varying access levels.
 - **Security**: All endpoints require authentication using Bearer JWT tokens.
+- **Credential Storage**: User passwords are securely hashed using bcrypt before being stored in the database, ensuring safe handling of sensitive information.
 
 ## Tech Stack
 
