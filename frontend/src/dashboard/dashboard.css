@@ -1,49 +1,49 @@
 .tabs-bar {
-    padding: 5px; /* Optional: Add padding for spacing */
+    padding: 5px;
 }
 
 .tabs-bar .mantine-Tabs-tab {
-    color: #333; /* Darker text color */
+    color: #333; 
     font-weight: bold;
-    margin-right: 10px; /* Spacing between tabs */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    margin-right: 10px; 
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .tabs-bar .mantine-Tabs-tab:hover {
-    background-color: #e0f0ff; /* Light blue background on hover */
-    color: #007BFF; /* Blue text color on hover */
-    border-radius: 5px; /* Optional: Match active tab corners */
+    background-color: #e0f0ff; 
+    color: #007BFF; 
+    border-radius: 5px; 
 }
 
 .tabs-bar .mantine-Tabs-tab[data-active] {
-    background-color: #007BFF; /* Active tab background (blue) */
-    color: white; /* Active tab text color */
-    border-radius: 5px; /* Optional: Round corners of active tab */
+    background-color: #007BFF;
+    color: white; 
+    border-radius: 5px; 
 }
 
 .my-account-button {
-    padding: 10px 20px; /* Adjust the padding as needed */
-    color: #333; /* Change the font color to blue */
-    margin-left: auto; /* This will push the button to the right */
+    padding: 10px 20px;
+    color: #333; 
+    margin-left: auto; 
 }
 
 .app-name-tab {
-    font-size: 20px; /* Larger font size for logo appearance */
+    font-size: 22px; 
     font-weight: bold;
-    font-family: 'Poppins', sans-serif; /* A sleek font for a logo */
-    letter-spacing: 2px; /* Add spacing for a logo effect */
-    color: #555; /* Softer shade for a professional look */
+    font-family: 'Poppins', sans-serif; 
+    letter-spacing: 2px; 
+    color: #555; 
     display: flex;
     align-items: center;
-    justify-content: center; /* Center text horizontally */
-    height: 30px; /* Set explicit height */
-    line-height: 1; /* Prevent extra spacing from line height */
-    padding: 5px 10px; /* Minimal padding inside the logo */
-    margin: 10px 15px; /* Add space around the logo */
-    border-radius: 8px; /* Rounded edges */
-    background-color: #f5f5f5; /* Light background for contrast */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    user-select: none; /* Prevent text selection */
-    cursor: default; /* Indicate non-clickable */
+    justify-content: center; 
+    height: 30px; 
+    line-height: 1; 
+    padding: 5px 10px;
+    margin: 10px 15px; 
+    border-radius: 8px; 
+    background-color: #f5f5f5; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    user-select: none; 
+    cursor: default; 
 }
 

@@ -4,11 +4,11 @@ import { IconTrash, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import "./audiofiles.css";
 
 function FavouriteAudioFiles({ selectedTab }) {
-  const [audioFiles, setAudioFiles] = useState([]); // List of uploaded audio files
-  const [filteredAudioFiles, setFilteredAudioFiles] = useState([]); // Filtered audio files based on search
+  const [audioFiles, setAudioFiles] = useState([]);
+  const [filteredAudioFiles, setFilteredAudioFiles] = useState([]); 
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [searchQuery, setSearchQuery] = useState(''); // Search query for filtering files
+  const [searchQuery, setSearchQuery] = useState(''); 
 
 
   // Fetch audio files from the backend

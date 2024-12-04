@@ -4,12 +4,12 @@ import { IconTrash, IconMusic, IconHeart, IconHeartFilled } from '@tabler/icons-
 import "./audiofiles.css";
 
 function AudioFiles({selectedTab}) {
-  const [audioFiles, setAudioFiles] = useState([]); // List of uploaded audio files
-  const [filteredAudioFiles, setFilteredAudioFiles] = useState([]); // Filtered audio files based on search
-  const [selectedFile, setSelectedFile] = useState(null); // Currently selected file for upload
+  const [audioFiles, setAudioFiles] = useState([]); 
+  const [filteredAudioFiles, setFilteredAudioFiles] = useState([]); 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [searchQuery, setSearchQuery] = useState(''); // Search query for filtering files
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Handle file upload
   const handleFileUpload = async () => {

@@ -11,7 +11,7 @@ import { jwtDecode } from "jwt-decode";
 
 
 const PrivateRoute = ({ element }) => {
-  const token = localStorage.getItem('access_token'); // Retrieve the token from localStorage
+  const token = localStorage.getItem('access_token'); 
 
   // If no token exists, redirect to login
   if (!token) {
@@ -19,57 +19,51 @@ const PrivateRoute = ({ element }) => {
   }
 
   try {
-    // Decode the token
     const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // Get the current time in seconds
+    const currentTime = Date.now() / 1000;
 
     // Check if the token has expired
     if (decodedToken.exp < currentTime) {
-      localStorage.removeItem('access_token'); // Remove expired token from localStorage
-      return <Navigate to="/" />; // Redirect to login page
+      localStorage.removeItem('access_token'); 
+      return <Navigate to="/" />; 
     }
 
   } catch (error) {
-    // If token decoding fails or is invalid, remove it and redirect to login
     localStorage.removeItem('access_token');
     return <Navigate to="/" />;
   }
 
-  return element; // If token is valid, render the requested route
+  return element; 
 };
 
 const PrivateAdminRoute = ({ element }) => {
-  const token = localStorage.getItem('access_token'); // Retrieve the token from localStorage
+  const token = localStorage.getItem('access_token');
   const role = localStorage.getItem('user_role')
 
-  // If no token exists, redirect to login
   if (!token) {
     return <Navigate to="/" />;
   }
 
   try {
-    // Decode the token
     const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // Get the current time in seconds
+    const currentTime = Date.now() / 1000;
 
-    // Check if the token has expired
     if (decodedToken.exp < currentTime) {
-      localStorage.removeItem('access_token'); // Remove expired token from localStorage
-      return <Navigate to="/" />; // Redirect to login page
+      localStorage.removeItem('access_token'); 
+      return <Navigate to="/" />;
     }
 
-    // Check if the user role is admin
     if (role !== 'admin') {
       return <Navigate to="/user" />;
     }
 
   } catch (error) {
-    // If token decoding fails or is invalid, remove it and redirect to login
+
     localStorage.removeItem('access_token');
     return <Navigate to="/" />;
   }
 
-  return element; // If token is valid and user is admin, render the requested route
+  return element; 
 };
 
 

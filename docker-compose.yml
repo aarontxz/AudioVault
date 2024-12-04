@@ -8,9 +8,6 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-    environment:
-      - REACT_APP_BACKEND_URL=http://localhost:5000
-      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app  
     networks:
@@ -23,13 +20,6 @@ services:
       context: ./backend
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_RUN_HOST=0.0.0.0
-      - FLASK_ENV=development 
-      - FLASK_DEBUG=1 
-      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb 
-      - FLASK_SECRET_KEY=AudioVaultKey
     volumes:
       - ./backend:/app  
     depends_on:

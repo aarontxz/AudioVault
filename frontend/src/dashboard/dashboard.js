@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, rem, Button, Box } from '@mantine/core';
-import { IconMusic, IconUsers, IconUser, IconHeart } from '@tabler/icons-react'; // Import heart icon
-import Manage from '../manage/manage'; // Import your Manage component
+import { IconMusic, IconUsers, IconUser, IconHeart } from '@tabler/icons-react'; 
+import Manage from '../manage/manage'; 
 import AudioFiles from '../audio/audiofiles';
-import AccountDrawer from '../drawer/accountdrawer'; // Import AccountDrawer
-import FavouritesAudioFiles from '../audio/favourites'; // Import the Favourites component (assumed to exist)
-import './dashboard.css'; // Import the CSS file
+import AccountDrawer from '../drawer/accountdrawer'; 
+import FavouritesAudioFiles from '../audio/favourites'; 
+import './dashboard.css'; 
 
 const Dashboard = () => {
-  // Initialize selectedTab from localStorage or default to 'audiofiles'
   const currentTab = localStorage.getItem('selectedTab') || 'audiofiles';
-  const [selectedTab, setSelectedTab] = useState(currentTab); // State for selected tab
-  const [drawerOpened, setDrawerOpened] = useState(false); // State for Drawer
+  const [selectedTab, setSelectedTab] = useState(currentTab);
+  const [drawerOpened, setDrawerOpened] = useState(false); 
 
-  const iconStyle = { width: rem(16), height: rem(16) }; // Styling for icons
+  const iconStyle = { width: rem(16), height: rem(16) }; 
 
   // Persist selectedTab to localStorage whenever it changes
   useEffect(() => {
@@ -22,15 +21,15 @@ const Dashboard = () => {
 
   // Handle tab click to update selectedTab
   const handleTabClick = (tab) => {
-    setSelectedTab(tab); // Update the state when tab is clicked
+    setSelectedTab(tab); 
   };
 
   return (
     <div className="dashboard-container">
       <Tabs
         className="tabs-bar"
-        value={selectedTab} // Set the current tab value
-        onTabChange={(tab) => setSelectedTab(tab)} // Update selectedTab when tab changes
+        value={selectedTab}
+        onTabChange={(tab) => setSelectedTab(tab)} 
       >
         <Tabs.List className="tabs-list">
           {/* Leftmost Non-Clickable Tab for App Name */}
@@ -41,7 +40,7 @@ const Dashboard = () => {
           <Tabs.Tab
             value="manage users"
             leftSection={<IconUsers style={iconStyle} />}
-            onClick={() => handleTabClick('manage users')} // Trigger handleTabClick
+            onClick={() => handleTabClick('manage users')} 
           >
             Manage Users
           </Tabs.Tab>
@@ -49,7 +48,7 @@ const Dashboard = () => {
           <Tabs.Tab
             value="audiofiles"
             leftSection={<IconMusic style={iconStyle} />}
-            onClick={() => handleTabClick('audiofiles')} // Trigger handleTabClick
+            onClick={() => handleTabClick('audiofiles')} 
           >
             Audio Files
           </Tabs.Tab>
@@ -57,7 +56,7 @@ const Dashboard = () => {
           <Tabs.Tab
             value="favourites"
             leftSection={<IconHeart style={iconStyle} />}
-            onClick={() => handleTabClick('favourites')} // Trigger handleTabClick
+            onClick={() => handleTabClick('favourites')} 
           >
             Favourites
           </Tabs.Tab>

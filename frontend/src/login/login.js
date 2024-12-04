@@ -5,21 +5,18 @@ import '@mantine/notifications/styles.css';
 import './login.css';
 
 function Login() {
-  // State to store the input values
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);  // Error state initialized to null
-  const navigate = useNavigate(); // Use the useNavigate hook instead of useHistory
+  const [error, setError] = useState(null);  
+  const navigate = useNavigate(); 
 
-  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent the default form submission
+    e.preventDefault();  
 
     setLoading(true);
-    setError(null);  // Reset any previous errors
+    setError(null); 
 
-    // Prepare the payload
     const payload = {
       username,
       password,
@@ -34,19 +31,18 @@ function Login() {
         body: JSON.stringify(payload),
       });
 
-      // Check if the response is successful
+    
       if (!response.ok) {
-        // Parse the error response body (which contains the error message)
         const errorData = await response.json();
         if (errorData.error) {
-          setError(errorData.error); // Set the error message from backend response
+          setError(errorData.error);
         }
         throw new Error(errorData.error || 'Login failed. Please try again.');
       }
 
       const data = await response.json();
 
-      // Assuming 'data' contains the tokens
+
       const { access_token, refresh_token, user_id, user_role} = data;
 
       // Save the tokens securely (e.g., to localStorage)
@@ -56,7 +52,6 @@ function Login() {
       localStorage.setItem('user_role', user_role)
       localStorage.setItem('username', username)
 
-      // Optionally check if the token is legitimate (e.g., decode it, or verify with the server)
       if (user_role === 'admin') {
         console.log('Login successful:', data);
         navigate('/admin');

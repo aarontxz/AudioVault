@@ -4,21 +4,21 @@ import { IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
 import './manage.css';
 
 function Manage({selectedTab}) {
-  const [users, setUsers] = useState([]); // State to store users
-  const [filteredUsers, setFilteredUsers] = useState([]); // State to store filtered users
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // To toggle the add user modal
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // To toggle the edit user modal
-  const [deleteConfirmation, setDeleteConfirmation] = useState(false); // For delete confirmation
-  const [selectedUser, setSelectedUser] = useState(null); // To store the user to be edited
-  const [userToDelete, setUserToDelete] = useState(null); // 
-  const [newUser, setNewUser] = useState({ username: '', role: '', password: ''}); // For adding a new user
+  const [users, setUsers] = useState([]); 
+  const [filteredUsers, setFilteredUsers] = useState([]); 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false); 
+  const [selectedUser, setSelectedUser] = useState(null); 
+  const [userToDelete, setUserToDelete] = useState(null); 
+  const [newUser, setNewUser] = useState({ username: '', role: '', password: ''}); 
   const [message, setMessage] = useState(''); 
   const [messageType, setMessageType] = useState(''); 
-  const [editmessage, setEditMessage] = useState(''); // For displaying success or error messages
-  const [editmessageType, setEditMessageType] = useState(''); // To set the type of message: 'success' or 'error'
+  const [editmessage, setEditMessage] = useState(''); 
+  const [editmessageType, setEditMessageType] = useState(''); 
   const [addmessage, setAddMessage] = useState(''); 
   const [addmessageType, setAddMessageType] = useState('');
-  const [searchTerm, setSearchTerm] = useState(''); // For searching by username
+  const [searchTerm, setSearchTerm] = useState('');
 
   const resetState = () => {
     setUsers([]);
@@ -42,7 +42,6 @@ function Manage({selectedTab}) {
     fetchUsers();
   }, []);
   
-  // Example use of resetState when needed
   useEffect(() => {
     if (selectedTab === 'manage users') {
       fetchUsers();
@@ -51,14 +50,13 @@ function Manage({selectedTab}) {
   }, [selectedTab]);
 
   useEffect(() => {
-    // Filter users based on search term
     setFilteredUsers(
       users.filter((user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [searchTerm, users]);
 
   const fetchUsers = async () => {
-    const token = localStorage.getItem('access_token'); // Or wherever your token is stored
+    const token = localStorage.getItem('access_token');
     if (!token) {
       console.error('No token found');
       return;
@@ -85,7 +83,7 @@ function Manage({selectedTab}) {
   };
 
   const handleAddUser = async () => {
-    const token = localStorage.getItem('access_token'); // Or wherever your token is stored
+    const token = localStorage.getItem('access_token'); 
     if (!token) {
       console.error('No token found');
       return;
@@ -105,8 +103,8 @@ function Manage({selectedTab}) {
         setMessage(data.message);
         setMessageType('success');
         setNewUser({ username: '', role: '', password: ''});
-        fetchUsers(); // Refresh the user list
-        setIsAddModalOpen(false); // Close the add modal
+        fetchUsers(); 
+        setIsAddModalOpen(false); 
       } else {
         const errorData = await response.json();
         setAddMessage(errorData.error);
@@ -185,7 +183,7 @@ function Manage({selectedTab}) {
       <Table style={{ tableLayout: 'fixed', width: '100%' }}>
         <tbody>
           <tr>
-            <td style={{ width: '60%' }}>{user.username}</td>
+            <td style={{ width: '60%', textAlign: 'left', padding: '10px' }}>{user.username}</td>
             <td style={{ width: '24%' }}>{user.role}</td>
             <td style={{ width: '8%' }}>
               <ActionIcon

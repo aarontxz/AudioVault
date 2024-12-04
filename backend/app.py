@@ -3,8 +3,8 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 import uuid
-import bcrypt  # Import bcrypt for password hashing
-import jwt  # Import jwt for token handling
+import bcrypt  
+import jwt
 import datetime
 import os
 import boto3
@@ -92,7 +92,7 @@ def login():
     # Generate JWT tokens
     token = jwt.encode({
         'user_id': user.id,
-        'exp': datetime.datetime.now() + datetime.timedelta(minutes=15)  # Token expires in 15 mins
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=120)  # Token expires in 15 mins
     }, app.config['SECRET_KEY'], algorithm="HS256")
 
     refresh_token = jwt.encode({
@@ -102,7 +102,7 @@ def login():
 
     return jsonify({"access_token": token, "refresh_token": refresh_token, "user_id": user.id, "user_role": user.role}), 200
 
-# Endpoint to refresh the access token
+
 @app.route('/refresh', methods=['POST'])
 @token_required  
 def refresh_token():
@@ -121,7 +121,7 @@ def refresh_token():
     except Exception as e:
         return jsonify({"error": "Invalid refresh token"}), 401
 
-# Endpoint to create a user (POST request)
+# Endpoint to create a user
 @app.route('/users', methods=['POST'])
 @token_required  
 def create_user(current_user):
@@ -145,38 +145,40 @@ def create_user(current_user):
 
     return jsonify({"message": f"User {username} created successfully!"}), 201
 
+# Endpoint to retrieve all users
 @app.route('/users', methods=['GET'])
 @token_required  
-def get_users(current_user):  # Accept current_user passed from the decorator
-    users = User.query.order_by(User.username, User.id).all()  # Fetch all users from the database
+def get_users(current_user):  
+    users = User.query.order_by(User.username, User.id).all()  
     users_data = [
         {"id": user.id, "username": user.username, "role": user.role}
         for user in users
-    ]  # Transform the data into a JSON-serializable format
+    ] 
     return jsonify({"users": users_data}), 200
     
+# Endpoint to delete a user    
 @app.route('/users/<id>', methods=['DELETE'])
 def delete_user(id):
     user_to_delete = User.query.filter_by(id=id).first()
     if not user_to_delete:
         return jsonify({"error": "User not found"}), 404
 
-    # Delete the user
     db.session.delete(user_to_delete)
     db.session.commit()
 
     return jsonify({"message": "User deleted successfully!"}), 200
 
+
+# Endpoint to update a user    
 @app.route('/users/<id>', methods=['PUT'])
 @token_required
-def update_user(current_user, id):  # Accept current_user from the decorator
-    data = request.get_json()  # Get the updated data from the request body
+def update_user(current_user, id):  
+    data = request.get_json() 
     
     username = data.get('username')
     role = data.get('role')
     password = data.get('password')
     
-    # Fetch the user to update by ID
     user_to_update = User.query.filter_by(id=id).first()
     if username:
         existing_user = User.query.filter_by(username=username).first()
@@ -187,8 +189,6 @@ def update_user(current_user, id):  # Accept current_user from the decorator
     if not user_to_update:
         return jsonify({"error": "User not found"}), 404
     
-    
-    # Update the user fields if provided
     if username:
         user_to_update.username = username
     if role:
@@ -197,19 +197,18 @@ def update_user(current_user, id):  # Accept current_user from the decorator
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         user_to_update.password = hashed_password
 
-    # Commit the changes to the database
     db.session.commit()
 
     return jsonify({"message": f"User {id} updated successfully!"}), 200
 
+#Endpoint to update the user's own username
 @app.route('/users/username', methods=['PUT'])
 @token_required
-def update_self_username(current_user):  # Accept current_user from the decorator
-    data = request.get_json()  # Get the updated data from the request body
+def update_self_username(current_user):  
+    data = request.get_json() 
     
     username = data.get('username')
     
-    # Fetch the user to update by ID
     user_to_update = User.query.filter_by(id=current_user.id).first()
     if username:
         existing_user = User.query.filter_by(username=username).first()
@@ -219,25 +218,23 @@ def update_self_username(current_user):  # Accept current_user from the decorato
     if not user_to_update:
         return jsonify({"error": "User not found"}), 404
     
-    
-    # Update the user fields if provided
     if username:
         user_to_update.username = username
     else:
         return  jsonify({"error": f"Please input a new username"}), 500
-    # Commit the changes to the database
+
     db.session.commit()
 
     return jsonify({"message": f"Username updated successfully!"}), 200
 
+#Endpoint to update the user's own password
 @app.route('/users/password', methods=['PUT'])
 @token_required
-def update_self_password(current_user):  # Accept current_user from the decorator
-    data = request.get_json()  # Get the updated data from the request body
+def update_self_password(current_user):  
+    data = request.get_json() 
     
     password = data.get('password')
     
-    # Fetch the user to update by ID
     user_to_update = User.query.filter_by(id=current_user.id).first()
 
     if not user_to_update:
@@ -249,7 +246,6 @@ def update_self_password(current_user):  # Accept current_user from the decorato
     else:
         return  jsonify({"error": f"Please input a password"}), 500
 
-    # Commit the changes to the database
     db.session.commit()
 
     return jsonify({"message": f"User {id} updated successfully!"}), 200
@@ -266,12 +262,11 @@ class AudioFile(db.Model):
     def __repr__(self):
         return f"<AudioFile {self.file_name}, S3 Path {self.s3_bucket}/{self.s3_key}, Liked: {self.liked}, Shared: {self.share}>"
 
-# Endpoint to create an audio file record
+# Endpoint to create an audio file and upload to s3
 @app.route('/audiofiles', methods=['POST'])
 @token_required
 def create_audiofile(current_user):
     print(s3_client.list_buckets())
-    # Handling file upload
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
@@ -280,8 +275,6 @@ def create_audiofile(current_user):
         return jsonify({"error": "No selected file"}), 400
     
     filename = file.filename
-    
-    # Assuming the file is uploaded to S3 (adjust the bucket name)
     s3_bucket = 'audiovault-s3'
     id = str(uuid.uuid4())
     s3_key = id
@@ -302,7 +295,7 @@ def create_audiofile(current_user):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+# Endpoint to getch all audiofiles and their information from s3
 @app.route('/audiofiles', methods=['GET'])
 @token_required
 def get_audiofiles(current_user):
@@ -310,14 +303,12 @@ def get_audiofiles(current_user):
     audio_files_data = []
     
     for audio_file in audio_files:
-        # Retrieve the file content and metadata
         file_data = s3_client.get_object(Bucket=audio_file.s3_bucket, Key=audio_file.s3_key)
         file_content = file_data["Body"].read()  
         
         # Encode the binary content in Base64 for JSON serialization
         encoded_content = base64.b64encode(file_content).decode('utf-8')
         
-        # Prepare the response data
         audio_files_data.append({
             "id": audio_file.id,
             "file_name": audio_file.file_name,
@@ -327,22 +318,19 @@ def get_audiofiles(current_user):
     
     return jsonify({"audiofiles": audio_files_data}), 200
 
+# Endpoint to getch all favourite audiofiles and their information from s3
 @app.route('/audiofiles/favourites', methods=['GET'])
 @token_required
 def get_favourite_audiofiles(current_user):
-    # Query the database for the user's audio files
     audio_files = AudioFile.query.filter_by(user_id=current_user.id, liked=True).all()
     audio_files_data = []
     
     for audio_file in audio_files:
-        # Retrieve the file content and metadata
         file_data = s3_client.get_object(Bucket=audio_file.s3_bucket, Key=audio_file.s3_key)
         file_content = file_data["Body"].read()
         
-        # Encode the binary content in Base64 for JSON serialization
         encoded_content = base64.b64encode(file_content).decode('utf-8')
         
-        # Prepare the response data
         audio_files_data.append({
             "id": audio_file.id,
             "file_name": audio_file.file_name,
@@ -352,21 +340,18 @@ def get_favourite_audiofiles(current_user):
     
     return jsonify({"audiofiles": audio_files_data}), 200
 
+# Endpoint to delete an audiofile
 @app.route('/audiofiles/<id>', methods=['DELETE'])
 @token_required
 def delete_audiofile(current_user, id):
     try:
-        # Find the audio file by ID
         audio_file = AudioFile.query.filter_by(id=id, user_id=current_user.id).first()
         
-        # If the audio file doesn't exist or doesn't belong to the current user
         if not audio_file:
             return jsonify({"error": "Audio file not found or you do not have permission to delete it"}), 404
         
-        # Remove the file from S3
         s3_client.delete_object(Bucket=audio_file.s3_bucket, Key=audio_file.s3_key)
         
-        # Delete the record from the database
         db.session.delete(audio_file)
         db.session.commit()
         
@@ -374,31 +359,27 @@ def delete_audiofile(current_user, id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+# Endpoint like an audiofile
 @app.route('/audiofiles/<id>/like', methods=['PATCH'])
 @token_required
 def handle_like_file(current_user, id):
     try:
-        # Find the audio file by ID and check if it belongs to the current user
         audio_file = AudioFile.query.filter_by(id=id, user_id=current_user.id).first()
         
-        # If the audio file doesn't exist or doesn't belong to the current user
         if not audio_file or not current_user.id == audio_file.user_id:
             return jsonify({"error": "Audio file not found"}), 404
         if not current_user.id == audio_file.user_id:
             return jsonify({"error": "You do not have permission to like this file"}), 403
-        # Get the liked status from the request
+
         liked_status = request.json.get('liked')
         
         if liked_status is None:
             return jsonify({"error": "Liked status must be provided"}), 400
-        
-        # Update the liked status
+
         audio_file.liked = liked_status
-        
-        # Commit the changes to the database
+
         db.session.commit()
-        
-        # Return the updated liked status
+
         return jsonify({
             "id": audio_file.id,
             "liked": audio_file.liked
@@ -407,7 +388,7 @@ def handle_like_file(current_user, id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Create tables if they don't exist
+# Create tables if they don't exist and add an admin user 'audiovault'
 with app.app_context():
     db.create_all()
     create_admin()

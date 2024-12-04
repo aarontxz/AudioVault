@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Drawer, Button, TextInput, PasswordInput, Group, Text, Modal } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
-import './accountdrawer.css'; // Import the CSS file
+import './accountdrawer.css'; 
 
 const AccountDrawer = ({ opened, onClose }) => {
-  const [newUsername, setNewUsername] = useState(''); // Store new username
-  const [newPassword, setNewPassword] = useState(''); // Store new password
+  const [newUsername, setNewUsername] = useState(''); 
+  const [newPassword, setNewPassword] = useState(''); 
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [showConfirmUsername, setShowConfirmUsername] = useState(false); // Show confirmation for username change
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Show confirmation for password change
+  const [showConfirmUsername, setShowConfirmUsername] = useState(false); 
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
   const username = localStorage.getItem('username')
 
   const handleEditUsername = async () => {
