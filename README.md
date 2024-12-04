@@ -37,7 +37,20 @@ git clone https://github.com/aarontxz/AudioVault.git
 cd AudioVault
 ```
 
-### 2. build and run the docker image
+### 2. create a .env file with these variables
+AWS_ACCESS_KEY_ID=<replace this with the AWS_ACCESS_KEY_ID to access to s3>
+AWS_SECRET_ACCESS_KEY=<replace this with the AWS_SECRET_ACCESS_KEY to access to s3>
+AWS_DEFAULT_REGION=<replace this with the appropriate region for the s3 bucket>
+FLASK_APP=app.py
+FLASK_RUN_HOST=0.0.0.0
+FLASK_ENV=development 
+FLASK_DEBUG=1 
+FLASK_SECRET_KEY=AudioVaultKey
+REACT_APP_BACKEND_URL=http://backend:5000
+CHOKIDAR_USEPOLLING=true
+
+
+### 3. build and run the docker image
 ```bash
 docker-compose up --build
 ```
