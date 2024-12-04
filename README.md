@@ -1,7 +1,10 @@
 # AudioVault
 Audio File Hosting Web Application
 
-AudioVault is a secure platform for managing audio files, users, and authentication. It allows users to upload, like, and delete audio files while maintaining an organized, user-centric management system. The application includes authentication using JWT tokens, role-based user management, and integrates with S3 for audio file storage.
+AudioVault is a secure platform for users to upload/playback Audiofiles and Admin to manage these users. The application includes authentication using JWT tokens, role-based user access, and integrates with S3 for audio file storage.
+
+## Video walk through for AudioVault
+https://youtu.be/4bY9Knj95gw
 
 ## Features
 
