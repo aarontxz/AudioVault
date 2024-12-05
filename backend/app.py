@@ -22,8 +22,6 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'default-secret-key')
 db = SQLAlchemy(app)
 s3_client = boto3.client('s3', region_name='ap-southeast-1')
 
-print(s3_client.list_buckets())
-
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(30), unique=True, nullable=False)
@@ -33,7 +31,7 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}, Role {self.role}>'
 
-# Function to initialize the admin user
+# Function to initialize an admin user when creating the tables for the first time
 def create_admin():
     try:
         # Check if the admin already exists
@@ -52,20 +50,19 @@ def create_admin():
     except:
         db.session.rollback()
 
+# Function to ensure jwt token has been issued and has not expired
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        # Allow OPTIONS requests (preflight) to pass through without requiring a token
         if request.method == 'OPTIONS':
-            return '', 200  # Return 200 OK for OPTIONS requests to allow CORS preflight
+            return '', 200 
 
-        # Handle the regular requests (POST, GET, etc.)
         token = request.headers.get('Authorization')
         if not token:
             return jsonify({"error": "Token is missing"}), 401
         
         try:
-            token = token.split(" ")[1]  # Remove "Bearer" prefix
+            token = token.split(" ")[1] 
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.filter_by(id=data['user_id']).first()
         except Exception as e:
