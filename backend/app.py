@@ -186,6 +186,9 @@ def create_user(current_user):
 
     if not username or not password or not role:
         return jsonify({"error": "Username, password and role are required"}), 400
+    
+    if role != 'member' and role != 'admin':
+        return jsonify({"error": "Role must be member or admin"}), 400
 
     existing_user = User.query.filter_by(username=username).first()
     if existing_user:
