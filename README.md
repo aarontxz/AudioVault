@@ -118,8 +118,9 @@ docker --version
 ### 2. Log in to Docker and Pull Images
 ```
 docker login
-docker pull aarontxz/audiovault-frontend
-docker pull aarontxz/audiovault-backend
+docker pull aarontxz/audiovault-frontend:latest
+docker pull aarontxz/audiovault-backend:latest
+docker pull aarontxz/postgres:13
 ```
 ### 3. Set the required environment variables
 ```
@@ -135,6 +136,8 @@ docker run -d --network backend-network --name audiovault-frontend -p 3000:3000 
 docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
     -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL \
     -e MASTER_PASSWORD=$MASTER_PASSWORD aarontxz/audiovault-backend
+
+docker run -d --network backend-network --name audiovault-db -p 5432:5432   -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=audiovault   aarontxz/postgres:13
 ```
 
 ## how to redeploy on ec2
@@ -142,13 +145,13 @@ docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
 ### 1. in your local environment tag and push changes
 ```
 docker compose -up
-docker tag aarontxz/audiovault-backend
-docker tag aarontxz/audiovault-frontend
-docker push aarontxz/audiovault-backend
-docker push aarontxz/audiovault-frontend
+docker tag audiovault-frontend aarontxz/audiovault-frontend:latest
+docker tag audiovault-backend aarontxz/audiovault-backend:latest
+docker push aarontxz/audiovault-frontend:latest                   
+docker push aarontxz/audiovault-backend:latest                 
 ```
 
-### 2. connect to your ec2 and run the following commands
+### 2. connect to your EC2 and run the following commands
 
 ```
 docker stop audiovault-frontend
@@ -161,3 +164,9 @@ docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
     -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL \
     -e MASTER_PASSWORD=$MASTER_PASSWORD aarontxz/audiovault-backend
 ```
+
+
+## how to access the db in the container
+
+docker ps to find the db container
+docker exec -it 7c1ca42a0efe bash
