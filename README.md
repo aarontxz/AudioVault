@@ -89,9 +89,75 @@ FLASK_DEBUG=1
 FLASK_SECRET_KEY=AudioVaultKey
 REACT_APP_BACKEND_URL=http://localhost:5000 # Change this if not deploying locally
 CHOKIDAR_USEPOLLING=true
+MASTER_PASSWORD=<a user with a special role master with username master will be created when first initializing the app, set the password for this special user here>
 ```
 
 ### 5. build and run the docker image
 ```bash
 docker-compose up --build
+```
+
+
+## EC2 Setup
+
+Create an EC2 instance with permissions to access your s3 bucket
+
+Connect into your EC2 and Follow these steps to set up and run the application on your EC2 instance:
+
+### 1. Update and Install Docker
+Run the following commands to install and configure Docker:
+```bash
+sudo yum update -y
+sudo yum install -y docker
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+docker --version
+```
+
+### 2. Log in to Docker and Pull Images
+```
+docker login
+docker pull aarontxz/audiovault-frontend
+docker pull aarontxz/audiovault-backend
+```
+### 3. Set the required environment variables
+```
+export REACT_APP_BACKEND_URL=<your public ip:5000>
+export MASTER_PASSWORD=<set the password of the special user master>
+```
+
+### 4, Run the containers
+```
+docker run -d --network backend-network --name audiovault-frontend -p 3000:3000 \
+    -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL aarontxz/audiovault-frontend
+
+docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
+    -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL \
+    -e MASTER_PASSWORD=$MASTER_PASSWORD aarontxz/audiovault-backend
+```
+
+## how to redeploy on ec2
+
+### 1. in your local environment tag and push changes
+```
+docker compose -up
+docker tag aarontxz/audiovault-backend
+docker tag aarontxz/audiovault-frontend
+docker push aarontxz/audiovault-backend
+docker push aarontxz/audiovault-frontend
+```
+
+### 2. connect to your ec2 and run the following commands
+
+```
+docker stop audiovault-frontend
+docker stop audiovault-backend
+docker rm audiovault-frontend
+docker rm audiovault-backend
+docker run -d --network backend-network --name audiovault-frontend -p 3000:3000 \
+    -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL aarontxz/audiovault-frontend
+docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
+    -e REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL \
+    -e MASTER_PASSWORD=$MASTER_PASSWORD aarontxz/audiovault-backend
 ```
