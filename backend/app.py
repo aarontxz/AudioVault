@@ -49,19 +49,19 @@ def create_admin():
     This function is intended to be called when initializing the database for the first time.
     """
     try:
-        # Check if the admin already exists
-        admin = User.query.filter_by(username='audiovault').first()
+        # Check if the master already exists
+        admin = User.query.filter_by(username='master').first()
+        master_password = os.getenv('MASTER_PASSWORD', '')
         if not admin:
-            # Create a new admin if none exists
-            hashed_password = bcrypt.hashpw('audiovault'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            # Create a new master if none exists
+            hashed_password = bcrypt.hashpw(master_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             admin = User(
-                username='audiovault',
+                username='master',
                 password=hashed_password,
-                role='admin'
+                role='master'
             )
             db.session.add(admin)
             db.session.commit()
-            print("Admin user created.")
     except:
         db.session.rollback()
 
@@ -114,7 +114,6 @@ def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    print(username)
 
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -210,7 +209,7 @@ def get_users(current_user):
     Response:
         - On success: JSON list of users with 'id', 'username', and 'role'.
     """
-    users = User.query.order_by(User.username, User.id).all()  
+    users = User.query.filter(User.role != 'master').order_by(User.username, User.id).all()  
     users_data = [
         {"id": user.id, "username": user.username, "role": user.role}
         for user in users
@@ -231,6 +230,8 @@ def delete_user(id):
         - On failure: JSON error message if the user is not found (404).
     """
     user_to_delete = User.query.filter_by(id=id).first()
+    if user_to_delete.role == 'master':
+        jsonify({"error": "cannot delete master"}), 403
     if not user_to_delete:
         return jsonify({"error": "User not found"}), 404
 
@@ -273,7 +274,7 @@ def update_user(current_user, id):
     
     if username:
         user_to_update.username = username
-    if role:
+    if role == 'member' or role == 'admin':
         user_to_update.role = role
     if password:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

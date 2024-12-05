@@ -52,7 +52,7 @@ function Login() {
       localStorage.setItem('user_role', user_role)
       localStorage.setItem('username', username)
 
-      if (user_role === 'admin') {
+      if (user_role === 'admin' || user_role === 'master') {
         console.log('Login successful:', data);
         navigate('/admin');
       } else {

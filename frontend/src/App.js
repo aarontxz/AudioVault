@@ -53,7 +53,7 @@ const PrivateAdminRoute = ({ element }) => {
       return <Navigate to="/" />;
     }
 
-    if (role !== 'admin') {
+    if (role !== 'admin' && role!= 'master') {
       return <Navigate to="/user" />;
     }
 
