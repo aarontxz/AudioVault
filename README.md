@@ -1,7 +1,7 @@
 # AudioVault
 Audio File Hosting Web Application
 
-AudioVault is a secure platform for users to upload/playback Audiofiles and Admin to manage these users. The application includes authentication using JWT tokens, role-based user access, and integrates with S3 for audio file storage.
+AudioVault is a platform for users to upload/playback audio files and Admin to manage these users. The application includes authentication using JWT tokens, role-based user access, and integrates with S3 for audio file storage.
 
 ## Video walk through for AudioVault
 https://youtu.be/4bY9Knj95gw
@@ -30,7 +30,6 @@ https://youtu.be/4bY9Knj95gw
 - psycopg2 (PostgreSQL adapter for Python)
 - SQLAlchemy (for ORM support)
 - AWS SDK (boto3)
-- OpenAPI/Swagger documentation tools
 
 ## Setup
 
@@ -41,20 +40,58 @@ git clone https://github.com/aarontxz/AudioVault.git
 cd AudioVault
 ```
 
-### 2. create a .env file with these variables
-AWS_ACCESS_KEY_ID=<replace this with the AWS_ACCESS_KEY_ID to access to s3>
-AWS_SECRET_ACCESS_KEY=<replace this with the AWS_SECRET_ACCESS_KEY to access to s3>
-AWS_DEFAULT_REGION=<replace this with the appropriate region for the s3 bucket>
+### 2. Prepare an S3 Bucket
+
+Create an S3 bucket named `audiovault-s3`.  
+This bucket will serve as the storage for audio files and related resources. Ensure that the bucket name matches exactly as `audiovault-s3`.
+
+#### 3. Create an IAM User with Permissions  
+
+Create an IAM user and attach the following policy to grant access to the `audiovault-s3` bucket. 
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+                "s3:GetObject",
+                "s3:GetObjectAcl",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::audiovault-s3",
+                "arn:aws:s3:::audiovault-s3/*"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
+```
+
+After creating the IAM user, generate an Access Key ID and Secret Access Key for the user. These credentials will be required to connect your application to the S3 bucket.
+
+
+### 4. Create a `.env` File with These Variables  
+
+Set up a `.env` file in your project directory and include the following environment variables:  
+
+```plaintext
+AWS_ACCESS_KEY_ID=<replace this with the Access Key ID>
+AWS_SECRET_ACCESS_KEY=<replace this with the Secret Access Key>
+AWS_DEFAULT_REGION=<replace this with the appropriate region for the S3 bucket>
 FLASK_APP=app.py
 FLASK_RUN_HOST=0.0.0.0
 FLASK_ENV=development 
 FLASK_DEBUG=1 
 FLASK_SECRET_KEY=AudioVaultKey
-REACT_APP_BACKEND_URL=http://backend:5000
+REACT_APP_BACKEND_URL=http://localhost:5000 # Change this if not deploying locally
 CHOKIDAR_USEPOLLING=true
+```
 
-
-### 3. build and run the docker image
+### 5. build and run the docker image
 ```bash
 docker-compose up --build
 ```
