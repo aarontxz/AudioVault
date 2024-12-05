@@ -140,7 +140,7 @@ docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
 docker run -d --network backend-network --name audiovault-db -p 5432:5432   -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=audiovault   aarontxz/postgres:13
 ```
 
-## how to redeploy on ec2
+## how to redeploy changes on EC2
 
 ### 1. in your local environment tag and push changes
 ```
