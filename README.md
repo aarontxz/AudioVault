@@ -166,7 +166,24 @@ docker run -d --network backend-network --name audiovault-backend -p 5000:5000 \
 ```
 
 
-## how to access the db in the container
+## Accessing the Database Inside the Container
 
-docker ps to find the db container
-docker exec -it 7c1ca42a0efe bash
+To access the database running inside the Docker container, follow these steps:
+
+### 1. Connect to Your EC2 Instance
+
+### 2. Find the Database Container ID
+Run the following command to list all running containers and identify the database container:
+```bash
+docker ps
+```
+
+### 3. use this exec command to get inside the container
+```
+docker exec -it <db-container-id> bash
+```
+
+### 4. once inside the container you can use the PostgreSQL CLI to interact with the database:
+```
+psql -U user -d audiovault
+```
