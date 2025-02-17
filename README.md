@@ -154,6 +154,8 @@ docker push aarontxz/audiovault-backend:latest
 ### 2. connect to your EC2 and run the following commands
 
 ```
+docker pull aarontxz/audiovault-frontend:latest                   
+docker pull aarontxz/audiovault-backend:latest           
 docker stop audiovault-frontend
 docker stop audiovault-backend
 docker rm audiovault-frontend
